@@ -1,13 +1,14 @@
 package im.tox.tox4j.av.callbacks
 
-import im.tox.tox4j.av.data.{ Height, Width }
+import im.tox.tox4j.av.data.Height
+import im.tox.tox4j.av.data.Width
 import im.tox.tox4j.core.data.ToxFriendNumber
-import org.jetbrains.annotations.NotNull
 
 /**
  * Triggered when a video frame is received.
  */
-trait VideoReceiveFrameCallback[ToxCoreState] {
+interface VideoReceiveFrameCallback<ToxCoreState> {
+
   /**
    * @param friendNumber The friend number of the friend who sent a video frame.
    * @param width Width of the frame in pixels.
@@ -27,22 +28,28 @@ trait VideoReceiveFrameCallback[ToxCoreState] {
    *                if the image is bottom-up hence why you must abs() it when
    *                calculating plane buffer size.
    */
-  def videoReceiveFrame(
-    friendNumber: ToxFriendNumber,
-    width: Width, height: Height,
-    @NotNull y: Array[Byte], @NotNull u: Array[Byte], @NotNull v: Array[Byte],
-    yStride: Int, uStride: Int, vStride: Int
-  )(state: ToxCoreState): ToxCoreState = state
+  fun videoReceiveFrame(
+          friendNumber: ToxFriendNumber,
+          width: Width,
+          height: Height,
+          y: ByteArray,
+          u: ByteArray,
+          v: ByteArray,
+          yStride: Int,
+          uStride: Int,
+          vStride: Int,
+          state: ToxCoreState,
+  ) = state
 
   /**
    * An implementation may choose to keep the arrays to copy the data to around
-   * as an optimisation. If this method does not return [[None]], the arrays in
-   * the [[Some]] are passed to [[videoReceiveFrame]] as y, u, and v.
+   * as an optimisation. If this method does not return null, the arrays in
+   * the results are passed to [videoReceiveFrame] as y, u, and v.
    */
-  def videoFrameCachedYUV(
-    height: Height,
-    yStride: Int,
-    uStride: Int,
-    vStride: Int
-  ): Option[(Array[Byte], Array[Byte], Array[Byte])] = None
+  fun videFrameCachedYUV(
+          height: Height,
+          yStride: Int,
+          uStride: Int,
+          vStride: Int
+  ) : Triple<ByteArray, ByteArray, ByteArray>? = null
 }

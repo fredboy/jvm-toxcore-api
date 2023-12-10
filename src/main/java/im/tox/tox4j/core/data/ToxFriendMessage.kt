@@ -1,27 +1,28 @@
 package im.tox.tox4j.core.data
 
-import im.tox.core.error.CoreError
 import im.tox.core.typesafe.VariableSizeByteArrayCompanion
 import im.tox.tox4j.core.ToxCoreConstants
 
-@SuppressWarnings(Array("org.wartremover.warts.ArrayEquals"))
-final case class ToxFriendMessage private (value: Array[Byte]) extends AnyVal {
-  override def toString: String = new String(value)
-}
+data class ToxFriendMessage internal constructor(val value: ByteArray) {
 
-case object ToxFriendMessage extends VariableSizeByteArrayCompanion[ToxFriendMessage](
-  ToxCoreConstants.MaxMessageLength,
-  _.value
-) {
+  override fun toString(): String = String(value)
 
-  override protected def validate: Validator = super.validate { value =>
-    if (value.isEmpty) {
-      Some(CoreError.InvalidFormat("Empty friend message"))
-    } else {
-      None
+  companion object : VariableSizeByteArrayCompanion<ToxFriendMessage>(
+          ToxCoreConstants.maxMessageLength,
+          ToxFriendMessage::value
+  ) {
+
+    override fun validate(value: ByteArray): Exception? {
+      return super.validate(value) ?: if (value.isEmpty()) {
+        IllegalArgumentException("Empty friend message")
+      } else {
+        null
+      }
     }
+
+    override fun unsafeFromValue(value: ByteArray): ToxFriendMessage {
+      return ToxFriendMessage(value)
+    }
+
   }
-
-  override def unsafeFromValue(value: Array[Byte]): ToxFriendMessage = new ToxFriendMessage(value)
-
 }

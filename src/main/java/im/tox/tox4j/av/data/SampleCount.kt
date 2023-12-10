@@ -1,11 +1,13 @@
 package im.tox.tox4j.av.data
 
-final case class SampleCount private (value: Int) extends AnyVal
+data class SampleCount internal constructor(val value: Int) {
 
-case object SampleCount extends ((AudioLength, SamplingRate) => SampleCount) {
+  companion object : (AudioLength, SamplingRate) -> SampleCount {
 
-  override def apply(audioLength: AudioLength, samplingRate: SamplingRate): SampleCount = {
-    new SampleCount(samplingRate.value / 1000 * audioLength.value.toMillis.toInt)
+    override fun invoke(audioLength: AudioLength, samplingRate: SamplingRate): SampleCount {
+      return SampleCount(samplingRate.value / 1000 * audioLength.value.inWholeMilliseconds.toInt())
+    }
+
   }
 
 }

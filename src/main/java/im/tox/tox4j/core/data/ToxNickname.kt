@@ -3,16 +3,18 @@ package im.tox.tox4j.core.data
 import im.tox.core.typesafe.VariableSizeByteArrayCompanion
 import im.tox.tox4j.core.ToxCoreConstants
 
-@SuppressWarnings(Array("org.wartremover.warts.ArrayEquals"))
-final case class ToxNickname private (value: Array[Byte]) extends AnyVal {
-  override def toString: String = new String(value)
-}
+data class ToxNickname internal constructor(val value: ByteArray) {
 
-case object ToxNickname extends VariableSizeByteArrayCompanion[ToxNickname](
-  ToxCoreConstants.MaxNameLength,
-  _.value
-) {
+  override fun toString(): String = String(value)
 
-  override def unsafeFromValue(value: Array[Byte]): ToxNickname = new ToxNickname(value)
+  companion object : VariableSizeByteArrayCompanion<ToxNickname>(
+          ToxCoreConstants.maxNameLength,
+          ToxNickname::value
+  ) {
 
+    override fun unsafeFromValue(value: ByteArray): ToxNickname {
+      return ToxNickname(value)
+    }
+
+  }
 }

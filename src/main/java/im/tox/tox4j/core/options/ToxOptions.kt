@@ -1,6 +1,7 @@
 package im.tox.tox4j.core.options
 
-import im.tox.tox4j.core.{ ToxCore, ToxCoreConstants }
+import im.tox.core.network.Port
+import im.tox.tox4j.core.ToxCoreConstants
 
 /**
  * This class contains all the startup options for Tox.
@@ -33,22 +34,14 @@ import im.tox.tox4j.core.{ ToxCore, ToxCoreConstants }
  * @param saveData Optional serialised instance data from [[ToxCore.load]] or secret key from [[ToxCore.getSecretKey]].
  * @param fatalErrors Whether exceptions in [[ToxCore.iterate]] should abort the iteration.
  */
-final case class ToxOptions(
-    ipv6Enabled: Boolean = true,
-    udpEnabled: Boolean = true,
-    localDiscoveryEnabled: Boolean = true,
-    proxy: ProxyOptions = ProxyOptions.None,
-    startPort: Int = ToxCoreConstants.DefaultStartPort,
-    endPort: Int = ToxCoreConstants.DefaultEndPort,
-    tcpPort: Int = ToxCoreConstants.DefaultTcpPort,
-    saveData: SaveDataOptions = SaveDataOptions.None,
-    fatalErrors: Boolean = true
-) {
-  private def requireValidPort(name: String, port: Int): Unit = {
-    require(port >= 0 && port <= 65535, s"$name port should be a valid 16 bit positive integer")
-  }
-  require(startPort <= endPort, s"startPort ($startPort) should not be greater than endPort ($endPort)")
-  requireValidPort("Start", startPort)
-  requireValidPort("End", endPort)
-  requireValidPort("TCP", tcpPort)
-}
+data class ToxOptions(
+        val ipv6Enabled: Boolean = true,
+        val udpEnabled: Boolean = true,
+        val localDiscoveryEnabled: Boolean = true,
+        val proxyOptions: ProxyOptions = ProxyOptions.None,
+        val startPort: Port = Port.unsafeFromInt(ToxCoreConstants.defaultStartPort),
+        val endPort: Port = Port.unsafeFromInt(ToxCoreConstants.defaultEndPort),
+        val tcpPort: Port = Port.unsafeFromInt(ToxCoreConstants.defaultTcpPort),
+        val saveData: SaveDataOptions = SaveDataOptions.None,
+        val fatalErrors: Boolean = true,
+)

@@ -1,7 +1,5 @@
 package im.tox.core.typesafe
 
-import im.tox.core.typesafe.Equals._
-
 abstract class FixedSizeByteArrayCompanion[T <: AnyVal, S <: Security](
     final val Size: Int,
     toValue: T => Array[Byte]

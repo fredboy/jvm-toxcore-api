@@ -1,19 +1,23 @@
 package im.tox.tox4j.core.data
 
-import im.tox.core.typesafe.{ KeyCompanion, Security }
+import im.tox.core.typesafe.KeyCompanion
+import im.tox.core.typesafe.Security
 import im.tox.tox4j.core.ToxCoreConstants
 
-@SuppressWarnings(Array("org.wartremover.warts.ArrayEquals"))
-final case class ToxFriendAddress private (value: Array[Byte]) extends AnyVal {
-  def toHexString: String = ToxFriendAddress.toHexString(this)
-  override def toString: String = s"$productPrefix($toHexString)"
-}
+data class ToxFriendAddress internal constructor(val value: ByteArray) {
 
-case object ToxFriendAddress extends KeyCompanion[ToxFriendAddress, Security.Sensitive](
-  ToxCoreConstants.AddressSize,
-  _.value
-) {
+  fun toHexString() = ToxFriendAddress.toHexString(this)
 
-  override def unsafeFromValue(value: Array[Byte]): ToxFriendAddress = new ToxFriendAddress(value)
+  override fun toString(): String = "(${toHexString()})"
 
+  companion object : KeyCompanion<ToxFriendAddress, Security.Sensitive>(
+          ToxCoreConstants.addressSize,
+          ToxFriendAddress::value
+  ) {
+
+    override fun unsafeFromValue(value: ByteArray): ToxFriendAddress {
+      return ToxFriendAddress(value)
+    }
+
+  }
 }

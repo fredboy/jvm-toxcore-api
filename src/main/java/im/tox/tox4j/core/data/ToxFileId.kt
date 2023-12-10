@@ -1,21 +1,27 @@
 package im.tox.tox4j.core.data
 
-import im.tox.core.typesafe.{ KeyCompanion, Security }
+import im.tox.core.typesafe.KeyCompanion
+import im.tox.core.typesafe.Security
 import im.tox.tox4j.core.ToxCoreConstants
 
-@SuppressWarnings(Array("org.wartremover.warts.ArrayEquals"))
-final case class ToxFileId private (value: Array[Byte]) extends AnyVal {
-  def toHexString: String = ToxFileId.toHexString(this)
-  override def toString: String = s"$productPrefix($toHexString)"
-}
+data class ToxFileId internal constructor(val value: ByteArray) {
 
-case object ToxFileId extends KeyCompanion[ToxFileId, Security.Sensitive](
-  ToxCoreConstants.FileIdLength,
-  _.value
-) {
+  fun toHexString() = ToxFileId.toHexString(this)
 
-  val empty: ToxFileId = new ToxFileId(Array.empty)
+  override fun toString(): String {
+    return "(${toHexString()})"
+  }
 
-  override def unsafeFromValue(value: Array[Byte]): ToxFileId = new ToxFileId(value)
+  companion object : KeyCompanion<ToxFileId, Security.Sensitive>(
+          ToxCoreConstants.fileIdLength,
+          ToxFileId::value
+  ) {
 
+    val empty = ToxFileId(ByteArray(0))
+
+    override fun unsafeFromValue(value: ByteArray): ToxFileId {
+      return ToxFileId(value)
+    }
+
+  }
 }

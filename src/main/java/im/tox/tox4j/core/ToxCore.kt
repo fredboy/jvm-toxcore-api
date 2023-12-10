@@ -1,14 +1,15 @@
 package im.tox.tox4j.core
 
-import java.io.Closeable
-
 import im.tox.core.network.Port
-import im.tox.tox4j.core.callbacks._
-import im.tox.tox4j.core.data._
-import im.tox.tox4j.core.enums.{ ToxConnection, ToxFileControl, ToxMessageType, ToxUserStatus }
-import im.tox.tox4j.core.exceptions._
+import im.tox.tox4j.core.callbacks.ToxCoreEventListener
+import im.tox.tox4j.core.data.*
+import im.tox.tox4j.core.enums.ToxFileControl
+import im.tox.tox4j.core.enums.ToxFileKind
+import im.tox.tox4j.core.enums.ToxMessageType
+import im.tox.tox4j.core.enums.ToxUserStatus
+import im.tox.tox4j.core.exceptions.*
 import im.tox.tox4j.core.options.ToxOptions
-import org.jetbrains.annotations.NotNull
+import java.io.Closeable
 
 /**
  * Interface for a basic wrapper of tox chat functionality.
@@ -20,7 +21,7 @@ import org.jetbrains.annotations.NotNull
  * should be stopped or stop using the instance before one thread invokes [[ToxCore.close]] on it, or appropriate
  * exception handlers should be installed in all threads.
  */
-trait ToxCore extends Closeable with ToxCoreEventSynth {
+interface ToxCore : Closeable {
 
   /**
    * Store all information associated with the tox instance to a byte array.
@@ -31,8 +32,7 @@ trait ToxCore extends Closeable with ToxCoreEventSynth {
    *
    * @return a byte array containing the serialised tox instance.
    */
-  @NotNull
-  def getSavedata: Array[Byte]
+  val saveData: ByteArray
 
   /**
    * Create a new [[ToxCore]] instance with different options. The implementation may choose to create an object of
@@ -49,9 +49,8 @@ trait ToxCore extends Closeable with ToxCoreEventSynth {
    *
    * @return a new [[ToxCore]] instance.
    */
-  @NotNull
-  @throws[ToxNewException]
-  def load(@NotNull options: ToxOptions): ToxCore
+  @Throws(ToxNewException::class)
+  fun load(toxOptions: ToxOptions): ToxCore
 
   /**
    * Shut down the tox instance.
@@ -63,7 +62,7 @@ trait ToxCore extends Closeable with ToxCoreEventSynth {
    * [[im.tox.tox4j.exceptions.ToxKilledException]]. A closed instance cannot be reused; a new instance must be
    * created.
    */
-  override def close(): Unit
+  override fun close()
 
   /**
    * Bootstrap into the tox network.
@@ -79,8 +78,8 @@ trait ToxCore extends Closeable with ToxCoreEventSynth {
    * @param port      the port of the node.
    * @param publicKey the public key of the node.
    */
-  @throws[ToxBootstrapException]
-  def bootstrap(@NotNull address: String, port: Port, @NotNull publicKey: ToxPublicKey): Unit
+  @Throws(ToxBootstrapException::class)
+  fun bootstrap(address: String, port: Port, publicKey: ToxPublicKey)
 
   /**
    * Connect to a TCP relay to forward traffic.
@@ -93,16 +92,15 @@ trait ToxCore extends Closeable with ToxCoreEventSynth {
    * @param port      the TCP port the node is running a relay on.
    * @param publicKey the public key of the node.
    */
-  @throws[ToxBootstrapException]
-  def addTcpRelay(@NotNull address: String, port: Port, @NotNull publicKey: ToxPublicKey): Unit
+  @Throws(ToxBootstrapException::class)
+  fun addTcpRelay(address: String, port: Port, publicKey: ToxPublicKey)
 
   /**
    * Get the UDP port this instance is bound to.
    *
    * @return a port number between 1 and 65535.
    */
-  @throws[ToxGetPortException]
-  def getUdpPort: Port
+  val udpPort: Port @Throws(ToxGetPortException::class) get
 
   /**
    * Return the TCP port this Tox instance is bound to. This is only relevant if
@@ -110,8 +108,7 @@ trait ToxCore extends Closeable with ToxCoreEventSynth {
    *
    * @return a port number between 1 and 65535.
    */
-  @throws[ToxGetPortException]
-  def getTcpPort: Port
+  val tcpPort: Port @Throws(ToxGetPortException::class) get
 
   /**
    * Writes the temporary DHT public key of this instance to a byte array.
@@ -124,54 +121,44 @@ trait ToxCore extends Closeable with ToxCoreEventSynth {
    *
    * @return a byte array of size [[ToxCoreConstants.PublicKeySize]]
    */
-  @NotNull
-  def getDhtId: ToxPublicKey
+  val dhtId: ToxPublicKey
 
   /**
    * Get the time in milliseconds until [[iterate]] should be called again for optimal performance.
    *
    * @return the time in milliseconds until [[iterate]] should be called again.
    */
-  def iterationInterval: Int
+  val iterationInterval: Int
 
   /**
    * The main loop.
    *
    * This should be invoked every [[iterationInterval]] milliseconds.
    */
-  def iterate[S](@NotNull handler: ToxCoreEventListener[S])(state: S): S
+  fun <S> iterate(toxCoreEventListener: ToxCoreEventListener<S>, state: S): S
 
   /**
    * Copy the Tox Public Key (long term) from the Tox object.
    * @return a byte array of size [[ToxCoreConstants.PublicKeySize]]
    */
-  @NotNull
-  def getPublicKey: ToxPublicKey
+  val publicKey: ToxPublicKey
 
   /**
    * Copy the Tox Secret Key from the Tox object.
    * @return a byte array of size [[ToxCoreConstants.SecretKeySize]]
    */
-  @NotNull
-  def getSecretKey: ToxSecretKey
+  val secretKey: ToxSecretKey
 
   /**
-   * Set the 4-byte nospam part of the address.
+   * Current 4-byte nospam part of the address.
    *
    * Setting the nospam makes it impossible for others to send us friend requests that contained the
    * old nospam number.
-   *
-   * @param nospam the new nospam number.
    */
-  def setNospam(nospam: Int): Unit
+  var nospam: Int
 
   /**
-   * Get our current nospam number.
-   */
-  def getNospam: Int
-
-  /**
-   * Get our current tox address to give to friends.
+   * Current tox address to give to friends.
    *
    * The format is the following: [Public Key (32 bytes)][noSpam number (4 bytes)][checksum (2 bytes)].
    * After a call to [[setNospam]], the old address can no longer be used to send friend requests to
@@ -179,55 +166,31 @@ trait ToxCore extends Closeable with ToxCoreEventSynth {
    *
    * Note that it is not in a human-readable format. To display it to users, it needs to be formatted.
    *
-   * @return a byte array of size [[ToxCoreConstants.AddressSize]]
+   * @return a byte array of size [[ToxCoreConstants.addressSize]]
    */
-  @NotNull
-  def getAddress: ToxFriendAddress
+  val address: ToxFriendAddress
 
   /**
-   * Set the nickname for the Tox client.
+   * The nickname for the Tox client.
    *
-   * Cannot be longer than [[ToxCoreConstants.MaxNameLength]] bytes. Can be empty (zero-length).
-   *
-   * @param name A byte array containing the new nickname..
+   * Cannot be longer than [[ToxCoreConstants.maxNameLength]] bytes. Can be empty (zero-length).
    */
-  @throws[ToxSetInfoException]
-  def setName(@NotNull name: ToxNickname): Unit
+  var name: ToxNickname @Throws(ToxSetInfoException::class) set
 
   /**
-   * Get our own nickname.
-   */
-  @NotNull
-  def getName: ToxNickname
-
-  /**
-   * Set our status message.
+   * Our status message.
    *
-   * Cannot be longer than [[ToxCoreConstants.MaxStatusMessageLength]] bytes.
-   *
-   * @param message the status message to set.
+   * Cannot be longer than [ToxCoreConstants.maxStatusMessageLength] bytes.
    */
-  @throws[ToxSetInfoException]
-  def setStatusMessage(@NotNull message: ToxStatusMessage): Unit
-
-  /**
-   * Gets our own status message. May be null if the status message was empty.
-   */
-  @NotNull
-  def getStatusMessage: ToxStatusMessage
+  var statusMessage: ToxStatusMessage @Throws(ToxSetInfoException::class) set
 
   /**
    * Set our status.
    *
    * @param status status to set.
    */
-  def setStatus(@NotNull status: ToxUserStatus): Unit
+  var status: ToxUserStatus
 
-  /**
-   * Get our status.
-   */
-  @NotNull
-  def getStatus: ToxUserStatus
 
   /**
    * Add a friend to the friend list and send a friend request.
@@ -245,14 +208,15 @@ trait ToxCore extends Closeable with ToxCoreEventSynth {
    * If more than [[Int.MaxValue]] friends are added, this function throws
    * an exception.
    *
+   * @throws IllegalArgumentException if the Friend Address was not the right length.
+   *
    * @param address the address to add as a friend ([[ToxCoreConstants.AddressSize]] bytes).
    *                This is the byte array the friend got from their own [[getAddress]].
    * @param message the message to send with the friend request (must not be empty).
    * @return the new friend's friend number.
    */
-  @throws[ToxFriendAddException]
-  @throws[IllegalArgumentException]("if the Friend Address was not the right length.")
-  def addFriend(@NotNull address: ToxFriendAddress, @NotNull message: ToxFriendRequestMessage): ToxFriendNumber
+  @Throws(ToxFriendAddException::class, IllegalArgumentException::class)
+  fun addFriend(address: ToxFriendAddress, message: ToxFriendRequestMessage): ToxFriendNumber
 
   /**
    * Add a friend without sending a friend request.
@@ -266,12 +230,13 @@ trait ToxCore extends Closeable with ToxCoreEventSynth {
    * controlled by the same entity, so that this entity can perform the mutual
    * friend adding. In this case, there is no need for a friend request, either.
    *
+   * @throws IllegalArgumentException if the Public Key was not the right length.
+   *
    * @param publicKey the Public Key to add as a friend ([[ToxCoreConstants.PublicKeySize]] bytes).
    * @return the new friend's friend number.
    */
-  @throws[ToxFriendAddException]
-  @throws[IllegalArgumentException]("if the Public Key was not the right length.")
-  def addFriendNorequest(@NotNull publicKey: ToxPublicKey): ToxFriendNumber
+  @Throws(ToxFriendAddException::class, IllegalArgumentException::class)
+  fun addFriendNoRequest(publicKey: ToxPublicKey): ToxFriendNumber
 
   /**
    * Remove a friend from the friend list.
@@ -282,8 +247,8 @@ trait ToxCore extends Closeable with ToxCoreEventSynth {
    *
    * @param friendNumber the friend number to delete.
    */
-  @throws[ToxFriendDeleteException]
-  def deleteFriend(friendNumber: ToxFriendNumber): Unit
+  @Throws(ToxFriendDeleteException::class)
+  fun deleteFriend(friendNumber: ToxFriendNumber)
 
   /**
    * Gets the friend number for the specified Public Key.
@@ -291,8 +256,8 @@ trait ToxCore extends Closeable with ToxCoreEventSynth {
    * @param publicKey the Public Key.
    * @return the friend number that is associated with the Public Key.
    */
-  @throws[ToxFriendByPublicKeyException]
-  def friendByPublicKey(@NotNull publicKey: ToxPublicKey): ToxFriendNumber
+  @Throws(ToxFriendByPublicKeyException::class)
+  fun friendByPublicKey(publicKey: ToxPublicKey): ToxFriendNumber
 
   /**
    * Gets the Public Key for the specified friend number.
@@ -300,9 +265,8 @@ trait ToxCore extends Closeable with ToxCoreEventSynth {
    * @param friendNumber the friend number.
    * @return the Public Key associated with the friend number.
    */
-  @NotNull
-  @throws[ToxFriendGetPublicKeyException]
-  def getFriendPublicKey(friendNumber: ToxFriendNumber): ToxPublicKey
+  @Throws(ToxFriendGetPublicKeyException::class)
+  fun getFriendPublicKey(friendNumber: ToxFriendNumber): ToxPublicKey
 
   /**
    * Checks whether a friend with the specified friend number exists.
@@ -314,7 +278,7 @@ trait ToxCore extends Closeable with ToxCoreEventSynth {
    * @param friendNumber the friend number to check.
    * @return true if such a friend exists.
    */
-  def friendExists(friendNumber: ToxFriendNumber): Boolean
+  fun friendExists(friendNumber: ToxFriendNumber): Boolean
 
   /**
    * Get an array of currently valid friend numbers.
@@ -324,8 +288,7 @@ trait ToxCore extends Closeable with ToxCoreEventSynth {
    *
    * @return an array containing the currently valid friend numbers, the empty int array if there are no friends.
    */
-  @NotNull
-  def getFriendList: Array[Int]
+  val friendList: IntArray
 
   /**
    * Get an array of [[ToxFriendNumber]] objects with the same values as [[getFriendList]].
@@ -335,10 +298,7 @@ trait ToxCore extends Closeable with ToxCoreEventSynth {
    *
    * @return [[getFriendList]] mapped to [[ToxFriendNumber]].
    */
-  @NotNull
-  def getFriendNumbers: Array[ToxFriendNumber] = {
-    getFriendList.map(ToxFriendNumber.unsafeFromInt)
-  }
+  val friendNumbers: List<ToxFriendNumber> get() = friendList.map(ToxFriendNumber::unsafeFromInt)
 
   /**
    * Tell friend number whether or not we are currently typing.
@@ -348,8 +308,8 @@ trait ToxCore extends Closeable with ToxCoreEventSynth {
    * @param friendNumber the friend number to set typing status for.
    * @param typing       <code>true</code> if we are currently typing.
    */
-  @throws[ToxSetTypingException]
-  def setTyping(friendNumber: ToxFriendNumber, typing: Boolean): Unit
+  @Throws(ToxSetTypingException::class)
+  fun setTyping(friendNumber: ToxFriendNumber, typing: Boolean)
 
   /**
    * Send a text chat message to an online friend.
@@ -376,8 +336,8 @@ trait ToxCore extends Closeable with ToxCoreEventSynth {
    * @param message The message text
    * @return the message ID.
    */
-  @throws[ToxFriendSendMessageException]
-  def friendSendMessage(friendNumber: ToxFriendNumber, @NotNull messageType: ToxMessageType, timeDelta: Int, @NotNull message: ToxFriendMessage): Int
+  @Throws(ToxFriendSendMessageException::class)
+  fun friendSendMessage(friendNumber: ToxFriendNumber, messageType: ToxMessageType, timeDelta: Int, message: ToxFriendMessage): Int
 
   /**
    * Sends a file control command to a friend for a given file transfer.
@@ -386,8 +346,8 @@ trait ToxCore extends Closeable with ToxCoreEventSynth {
    * @param fileNumber The friend-specific identifier for the file transfer.
    * @param control The control command to send.
    */
-  @throws[ToxFileControlException]
-  def fileControl(friendNumber: ToxFriendNumber, fileNumber: Int, @NotNull control: ToxFileControl): Unit
+  @Throws(ToxFileControlException::class)
+  fun fileControl(friendNumber: ToxFriendNumber, fileNumber: Int, control: ToxFileControl)
 
   /**
    * Sends a file seek control command to a friend for a given file transfer.
@@ -399,8 +359,8 @@ trait ToxCore extends Closeable with ToxCoreEventSynth {
    * @param fileNumber The friend-specific identifier for the file transfer.
    * @param position The position that the file should be seeked to.
    */
-  @throws[ToxFileSeekException]
-  def fileSeek(friendNumber: ToxFriendNumber, fileNumber: Int, position: Long): Unit
+  @Throws(ToxFileSeekException::class)
+  fun fileSeek(friendNumber: ToxFriendNumber, fileNumber: Int, position: Long)
 
   /**
    * Return the file id associated to the file transfer as a byte array.
@@ -408,8 +368,8 @@ trait ToxCore extends Closeable with ToxCoreEventSynth {
    * @param friendNumber The friend number of the friend the file is being transferred to or received from.
    * @param fileNumber The friend-specific identifier for the file transfer.
    */
-  @throws[ToxFileGetException]
-  def getFileFileId(friendNumber: ToxFriendNumber, fileNumber: Int): ToxFileId
+  @Throws(ToxFileGetException::class)
+  fun getFileFileId(friendNumber: ToxFriendNumber, fileNumber: Int): ToxFileId
 
   /**
    * Send a file transmission request.
@@ -465,8 +425,8 @@ trait ToxCore extends Closeable with ToxCoreEventSynth {
    *         number is per friend. File numbers are reused after a transfer terminates.
    *         Any pattern in file numbers should not be relied on.
    */
-  @throws[ToxFileSendException]
-  def fileSend(friendNumber: ToxFriendNumber, kind: Int, fileSize: Long, @NotNull fileId: ToxFileId, @NotNull filename: ToxFilename): Int
+  @Throws(ToxFileSendException::class)
+  fun fileSend(friendNumber: ToxFriendNumber, kind: ToxFileKind, fileSize: Long, fileId: ToxFileId, fileName: ToxFileName): Int
 
   /**
    * Send a chunk of file data to a friend.
@@ -484,8 +444,8 @@ trait ToxCore extends Closeable with ToxCoreEventSynth {
    * @param position The file or stream position from which the friend should continue writing.
    * @param data The chunk data.
    */
-  @throws[ToxFileSendChunkException]
-  def fileSendChunk(friendNumber: ToxFriendNumber, fileNumber: Int, position: Long, @NotNull data: Array[Byte]): Unit
+  @Throws(ToxFileSendChunkException::class)
+  fun fileSendChunk(friendNumber: ToxFriendNumber, fileNumber: Int, position: Long, data: ByteArray)
 
   /**
    * Send a custom lossy packet to a friend.
@@ -503,8 +463,8 @@ trait ToxCore extends Closeable with ToxCoreEventSynth {
    * @param friendNumber The friend number of the friend this lossy packet should be sent to.
    * @param data A byte array containing the packet data including packet id.
    */
-  @throws[ToxFriendCustomPacketException]
-  def friendSendLossyPacket(friendNumber: ToxFriendNumber, @NotNull data: ToxLossyPacket): Unit
+  @Throws(ToxFriendCustomPacketException::class)
+  fun friendSendLossyPacket(friendNumber: ToxFriendNumber, data: ToxLossyPacket)
 
   /**
    * Send a custom lossless packet to a friend.
@@ -518,7 +478,7 @@ trait ToxCore extends Closeable with ToxCoreEventSynth {
    * @param friendNumber The friend number of the friend this lossless packet should be sent to.
    * @param data A byte array containing the packet data including packet id.
    */
-  @throws[ToxFriendCustomPacketException]
-  def friendSendLosslessPacket(friendNumber: ToxFriendNumber, @NotNull data: ToxLosslessPacket): Unit
+  @Throws(ToxFriendCustomPacketException::class)
+  fun friendSendLosslessPacket(friendNumber: ToxFriendNumber, data: ToxLosslessPacket)
 
 }

@@ -1,18 +1,23 @@
 package im.tox.tox4j.av.callbacks
 
-import java.util
+import im.tox.tox4j.av.data.*
 
-import im.tox.tox4j.av.data._
 import im.tox.tox4j.av.enums.ToxavFriendCallState
 import im.tox.tox4j.core.data.ToxFriendNumber
+import java.util.*
 
-trait ToxAvEventSynth {
+interface ToxAvEventSynth {
 
-  def invokeAudioBitRate(friendNumber: ToxFriendNumber, audioBitRate: BitRate): Unit
-  def invokeAudioReceiveFrame(friendNumber: ToxFriendNumber, pcm: Array[Short], channels: AudioChannels, samplingRate: SamplingRate): Unit
-  def invokeCall(friendNumber: ToxFriendNumber, audioEnabled: Boolean, videoEnabled: Boolean): Unit
-  def invokeCallState(friendNumber: ToxFriendNumber, callState: util.EnumSet[ToxavFriendCallState]): Unit
-  def invokeVideoBitRate(friendNumber: ToxFriendNumber, videoBitRate: BitRate): Unit
-  def invokeVideoReceiveFrame(friendNumber: ToxFriendNumber, width: Width, height: Height, y: Array[Byte], u: Array[Byte], v: Array[Byte], yStride: Int, uStride: Int, vStride: Int): Unit // scalastyle:ignore line.size.limit
+  fun invokeAudioBitRate(friendNumber: ToxFriendNumber, audioBitRate: BitRate)
+
+  fun invokeAudioReceiveFrame(friendNumber: ToxFriendNumber, pcm: ShortArray, channels: AudioChannels, samplingRate: SamplingRate)
+
+  fun invokeCall(friendNumber: ToxFriendNumber, audioEnabled: Boolean, videoEnabled: Boolean)
+
+  fun invokeCallState(friendNumber: ToxFriendNumber, callState: EnumSet<ToxavFriendCallState>)
+
+  fun invokeVideoBitRate(friendNumber: ToxFriendNumber, videoBitRate: BitRate)
+
+  fun invokeVideoReceiveFrame(friendNumber: ToxFriendNumber, width: Width, height: Height, y: ByteArray, u: ByteArray, v: ByteArray, yStride: Int, uStride: Int, vStride: Int)
 
 }

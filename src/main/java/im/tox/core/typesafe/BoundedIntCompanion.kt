@@ -5,7 +5,7 @@ abstract class BoundedIntCompanion<T : Any>(
         val maxValue: Int,
 ) : IntCompanion<T>() {
 
-  protected abstract fun unsafeFromInt(value: Int): T
+  abstract fun unsafeFromInt(value: Int): T
 
   fun clamp(value: Int): T = unsafeFromInt(value.coerceIn(minValue..maxValue))
 

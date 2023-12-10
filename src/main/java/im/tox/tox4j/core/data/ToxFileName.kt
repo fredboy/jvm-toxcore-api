@@ -1,7 +1,6 @@
 package im.tox.tox4j.core.data
 
-import im.tox.core.typesafe.KeyCompanion
-import im.tox.core.typesafe.Security
+import im.tox.core.typesafe.VariableSizeByteArrayCompanion
 import im.tox.tox4j.core.ToxCoreConstants
 
 data class ToxFileName internal constructor(val value: ByteArray) {
@@ -10,7 +9,7 @@ data class ToxFileName internal constructor(val value: ByteArray) {
 
   override fun toString(): String = String(value)
 
-  companion object : KeyCompanion<ToxFileName, Security.Sensitive>(
+  companion object : VariableSizeByteArrayCompanion<ToxFileName>(
           ToxCoreConstants.maxFileNameLength,
           ToxFileName::value
   ) {

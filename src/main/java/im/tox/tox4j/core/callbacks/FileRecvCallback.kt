@@ -1,13 +1,12 @@
 package im.tox.tox4j.core.callbacks
 
-import im.tox.tox4j.core.data.{ ToxFriendNumber, ToxFilename }
-import im.tox.tox4j.core.enums.ToxFileControl
-import org.jetbrains.annotations.NotNull
+import im.tox.tox4j.core.data.ToxFileName
+import im.tox.tox4j.core.data.ToxFriendNumber
 
 /**
  * This event is triggered when a file transfer request is received.
  */
-trait FileRecvCallback[ToxCoreState] {
+interface FileRecvCallback<ToxCoreState> {
   /**
    * The client should acquire resources to be associated with the file transfer.
    * Incoming file transfers start in the PAUSED state. After this callback
@@ -21,7 +20,10 @@ trait FileRecvCallback[ToxCoreState] {
    * @param fileSize Size in bytes of the file the client wants to send, -1 if unknown or streaming.
    * @param filename Name of the file. May not be the actual name. This name was sent along with the file send request.
    */
-  def fileRecv(
-    friendNumber: ToxFriendNumber, fileNumber: Int, kind: Int, fileSize: Long, @NotNull filename: ToxFilename
-  )(state: ToxCoreState): ToxCoreState = state
+  fun fileRecv(friendNumber: ToxFriendNumber,
+               fileNumber: Int,
+               kind: Int,
+               fileSize: Long,
+               filename: ToxFileName,
+               state: ToxCoreState): ToxCoreState = state
 }

@@ -4,29 +4,28 @@ import im.tox.tox4j.core.ToxCore
 
 abstract class ToxAvFactory {
 
-  def withToxAv[R](tox: ToxCore)(f: ToxAv => R): R
+  abstract fun <R> withToxAv(tox: ToxCore, f: (ToxAv) -> R): R
 
-  final def withToxAv[R](av: ToxAv)(f: ToxAv => R): R = {
-    try {
-      f(av)
-    } finally {
-      av.close()
+  fun <R> withToxAv(av: ToxAv, f: (ToxAv) -> R): R {
+    return av.use(f)
+  }
+
+  fun <R> withToxAvN(
+          toxes: List<ToxCore>,
+          initial: List<Pair<ToxCore, ToxAv>> = emptyList(),
+          f: (List<Pair<ToxCore, ToxAv>>) -> R
+  ): R {
+    val (tox, tail) = toxes.firstAndTail()
+
+    return withToxAv(tox) { av ->
+      withToxAvN(tail, mutableListOf(tox to av).apply { addAll(initial) }, f)
     }
   }
 
-  @SuppressWarnings(Array("org.wartremover.warts.Recursion"))
-  def withToxAvN[R](
-    toxes: List[ToxCore],
-    initial: List[(ToxCore, ToxAv)] = Nil
-  )(
-    f: List[(ToxCore, ToxAv)] => R
-  ): R = {
-    toxes match {
-      case Nil => f(initial)
-      case tox :: tail =>
-        withToxAv(tox) { av =>
-          withToxAvN(tail, (tox, av) :: initial)(f)
-        }
+  private fun <T> List<T>.firstAndTail(): Pair<T, List<T>> {
+    return when {
+      size == 1 -> first() to emptyList()
+      else -> first() to subList(1, size)
     }
   }
 

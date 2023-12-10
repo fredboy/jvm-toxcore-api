@@ -6,7 +6,8 @@ import im.tox.tox4j.core.data.ToxFriendNumber
 /**
  * This event is triggered when Core is ready to send more file data.
  */
-trait FileChunkRequestCallback[ToxCoreState] {
+interface FileChunkRequestCallback<ToxCoreState> {
+
   /**
    * If the length parameter is 0, the file transfer is finished, and the client's
    * resources associated with the file number should be released. After a call
@@ -20,7 +21,7 @@ trait FileChunkRequestCallback[ToxCoreState] {
    * request can occur an arbitrary number of times for any given chunk.
    *
    * In response to receiving this callback, the client should call the function
-   * [[ToxCore.fileSendChunk]] with the requested chunk. If the number of bytes
+   * [ToxCore.fileSendChunk] with the requested chunk. If the number of bytes
    * sent through that function is zero, the file transfer is assumed complete.
    * A client must send the full length of data requested with this callback.
    *
@@ -29,7 +30,12 @@ trait FileChunkRequestCallback[ToxCoreState] {
    * @param position The file or stream position from which to continue reading.
    * @param length The number of bytes requested for the current chunk.
    */
-  def fileChunkRequest(
-    friendNumber: ToxFriendNumber, fileNumber: Int, position: Long, length: Int
-  )(state: ToxCoreState): ToxCoreState = state
+  fun fileChunkRequest(
+    friendNumber: ToxFriendNumber,
+    fileNumber: Int,
+    position: Long,
+    length: Int,
+    state: ToxCoreState,
+  ): ToxCoreState = state
+
 }

@@ -1,8 +1,6 @@
 package im.tox.tox4j.core.callbacks
 
-import im.tox.tox4j.core.ToxCore
 import im.tox.tox4j.core.enums.ToxConnection
-import org.jetbrains.annotations.NotNull
 
 /**
  * This event is triggered whenever there is a change in the DHT connection
@@ -11,11 +9,9 @@ import org.jetbrains.annotations.NotNull
  * amounts of time. Clients should therefore not immediately bootstrap on
  * receiving a disconnect.
  */
-trait SelfConnectionStatusCallback[ToxCoreState] {
+interface SelfConnectionStatusCallback<ToxCoreState> {
   /**
    * @param connectionStatus The new connection status.
    */
-  def selfConnectionStatus(
-    @NotNull connectionStatus: ToxConnection
-  )(state: ToxCoreState): ToxCoreState = state
+  fun selfConnectionStatus(connectionStatus: ToxConnection, state: ToxCoreState): ToxCoreState = state
 }

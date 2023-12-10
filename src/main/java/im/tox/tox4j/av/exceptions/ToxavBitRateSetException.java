@@ -3,7 +3,7 @@ package im.tox.tox4j.av.exceptions;
 import im.tox.tox4j.exceptions.ToxException;
 import org.jetbrains.annotations.NotNull;
 
-public final class ToxavBitRateSetException extends ToxException<ToxavBitRateSetException.Code> {
+public final class ToxavBitRateSetException extends ToxException {
 
   public enum Code {
     /**

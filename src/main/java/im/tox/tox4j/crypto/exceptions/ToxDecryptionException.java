@@ -3,7 +3,7 @@ package im.tox.tox4j.crypto.exceptions;
 import im.tox.tox4j.exceptions.ToxException;
 import org.jetbrains.annotations.NotNull;
 
-public final class ToxDecryptionException extends ToxException<ToxDecryptionException.Code> {
+public final class ToxDecryptionException extends ToxException {
 
   public enum Code {
     /**
@@ -17,7 +17,7 @@ public final class ToxDecryptionException extends ToxException<ToxDecryptionExce
      */
     FAILED,
     /**
-     * The input data was shorter than {@link ToxCryptoConstants.ENCRYPTION_EXTRA_LENGTH} bytes.
+     * The input data was shorter than {@link im.tox.tox4j.crypto.ToxCryptoConstants#encryptionExtraLength} bytes.
      */
     INVALID_LENGTH,
     /**

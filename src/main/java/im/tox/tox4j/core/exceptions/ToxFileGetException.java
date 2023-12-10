@@ -3,7 +3,7 @@ package im.tox.tox4j.core.exceptions;
 import im.tox.tox4j.exceptions.ToxException;
 import org.jetbrains.annotations.NotNull;
 
-public final class ToxFileGetException extends ToxException<ToxFileGetException.Code> {
+public final class ToxFileGetException extends ToxException {
 
   public enum Code {
     /**

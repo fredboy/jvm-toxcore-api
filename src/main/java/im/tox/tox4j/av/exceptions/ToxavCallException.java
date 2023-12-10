@@ -3,7 +3,7 @@ package im.tox.tox4j.av.exceptions;
 import im.tox.tox4j.exceptions.ToxException;
 import org.jetbrains.annotations.NotNull;
 
-public final class ToxavCallException extends ToxException<ToxavCallException.Code> {
+public final class ToxavCallException extends ToxException {
 
   public enum Code {
     /**

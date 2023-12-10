@@ -4,7 +4,7 @@ import im.tox.tox4j.exceptions.JavaOnly;
 import im.tox.tox4j.exceptions.ToxException;
 import org.jetbrains.annotations.NotNull;
 
-public final class ToxKeyDerivationException extends ToxException<ToxKeyDerivationException.Code> {
+public final class ToxKeyDerivationException extends ToxException {
 
   public enum Code {
     /**

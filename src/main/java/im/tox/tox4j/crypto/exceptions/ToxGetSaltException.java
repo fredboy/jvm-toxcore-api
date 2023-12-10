@@ -3,7 +3,7 @@ package im.tox.tox4j.crypto.exceptions;
 import im.tox.tox4j.exceptions.ToxException;
 import org.jetbrains.annotations.NotNull;
 
-public final class ToxGetSaltException extends ToxException<ToxGetSaltException.Code> {
+public final class ToxGetSaltException extends ToxException {
 
   public enum Code {
     /**

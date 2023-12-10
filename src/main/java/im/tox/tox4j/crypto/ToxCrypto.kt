@@ -1,11 +1,10 @@
 package im.tox.tox4j.crypto
 
-import im.tox.tox4j.crypto.exceptions._
-import org.jetbrains.annotations.NotNull
+import im.tox.tox4j.crypto.exceptions.*
 
 /**
  * To perform encryption, first derive an encryption key from a password with
- * [[ToxCrypto.passKeyDerive]], and use the returned key to encrypt the data.
+ * [ToxCrypto.passKeyDerive], and use the returned key to encrypt the data.
  *
  * The encrypted data is prepended with a magic number, to aid validity checking
  * (no guarantees are made of course). Any data to be decrypted must start with
@@ -15,34 +14,28 @@ import org.jetbrains.annotations.NotNull
  * becomes corrupted, the data will be entirely unrecoverable.
  * Ditto if they forget their password, there is no way to recover the data.
  */
-trait ToxCrypto {
+interface ToxCrypto<PassKey> {
 
   /**
-   * This key structure's internals should not be used by any client program, even
-   * if they are straightforward here.
-   */
-  type PassKey
-
-  /**
-   * Compares two [[PassKey]]s for equality.
+   * Compares two [PassKey]s for equality.
    *
-   * @return true if the [[PassKey]]s are equal.
+   * @return true if the [PassKey]s are equal.
    */
-  def passKeyEquals(@NotNull a: PassKey, @NotNull b: PassKey): Boolean
+  fun passKeyEquals(a: PassKey, b: PassKey): Boolean
 
   /**
-   * Serialise the [[PassKey]] to a byte sequence.
+   * Serialise the [PassKey] to a byte list.
    *
-   * @return A sequence of bytes making up a [[PassKey]].
+   * @return A list of bytes making up a [PassKey].
    */
-  def passKeyToBytes(@NotNull passKey: PassKey): Seq[Byte]
+  fun passKeyToBytes(passKey: PassKey): List<Byte>
 
   /**
-   * Deserialise a [[PassKey]] from a byte sequence.
+   * Deserialize a [PassKey] from a byte sequence.
    *
-   * @return [[Some]]([[PassKey]]) if the key was valid, [[None]] otherwise.
+   * @return [PassKey] if the key was valid, null otherwise.
    */
-  def passKeyFromBytes(@NotNull bytes: Seq[Byte]): Option[PassKey]
+  fun passKeyFromBytes(bytes: ByteArray): PassKey?
 
   /**
    * Generates a secret symmetric key from the given passphrase.
@@ -54,26 +47,24 @@ trait ToxCrypto {
    * Note that this function is not deterministic; to derive the same key from a
    * password, you also must know the random salt that was used. See below.
    *
-   * @param passphrase A non-empty byte array containing the passphrase.
+   * @param passPhrase A non-empty byte array containing the passphrase.
    * @return the generated symmetric key.
    */
-  @NotNull
-  @throws[ToxKeyDerivationException]
-  def passKeyDerive(@NotNull passphrase: Array[Byte]): PassKey
+  @Throws(ToxKeyDerivationException::class)
+  fun passKeyDerive(passPhrase: ByteArray): PassKey
 
   /**
    * Same as above, except use the given salt for deterministic key derivation.
    *
-   * @param passphrase A non-empty byte array containing the passphrase.
-   * @param salt Array of size [[ToxCryptoConstants.SaltLength]].
+   * @param passPhrase A non-empty byte array containing the passphrase.
+   * @param salt Array of size [ToxCryptoConstants.saltLength].
    */
-  @NotNull
-  @throws[ToxKeyDerivationException]
-  def passKeyDeriveWithSalt(@NotNull passphrase: Array[Byte], @NotNull salt: Array[Byte]): PassKey
+  @Throws(ToxKeyDerivationException::class)
+  fun passKeyDeriveWithSalt(passPhrase: ByteArray, salt: ByteArray): PassKey
 
   /**
    * This retrieves the salt used to encrypt the given data, which can then be passed to
-   * [[passKeyDeriveWithSalt]] to produce the same key as was previously used. Any encrypted
+   * [passKeyDeriveWithSalt] to produce the same key as was previously used. Any encrypted
    * data with this module can be used as input.
    *
    * Success does not say anything about the validity of the data, only that data of
@@ -81,42 +72,39 @@ trait ToxCrypto {
    *
    * @return the salt, or an empty array if the magic number did not match.
    */
-  @NotNull
-  @throws[ToxGetSaltException]
-  def getSalt(@NotNull data: Array[Byte]): Array[Byte]
+  @Throws(ToxGetSaltException::class)
+  fun getSalt(data: ByteArray): ByteArray
 
   /* Now come the functions that are analogous to the part 2 functions. */
 
   /**
-   * Encrypt arbitrary data with a key produced by [[passKeyDerive]] or [[passKeyDeriveWithSalt]].
+   * Encrypt arbitrary data with a key produced by [passKeyDerive] or [passKeyDeriveWithSalt].
    *
-   * The output array will be [[ToxCryptoConstants.EncryptionExtraLength]] bytes longer than
+   * The output array will be [ToxCryptoConstants.encryptionExtraLength] bytes longer than
    * the input array.
    *
    * The result will be different on each call.
    *
    * @return the encrypted output array.
    */
-  @NotNull
-  @throws[ToxEncryptionException]
-  def encrypt(@NotNull data: Array[Byte], @NotNull passKey: PassKey): Array[Byte]
+  @Throws(ToxEncryptionException::class)
+  fun encrypt(data: ByteArray, passKey: PassKey): ByteArray
 
   /**
-   * This is the inverse of [[encrypt]], also using only keys produced by
-   * [[passKeyDerive]].
+   * This is the inverse of [encrypt], also using only keys produced by
+   * [passKeyDerive].
    *
-   * The output data has size data_length - [[ToxCryptoConstants.EncryptionExtraLength]].
+   * The output data has size data_length - [ToxCryptoConstants.encryptionExtraLength].
    *
    * @return the decrypted output array.
    */
-  @NotNull
-  @throws[ToxDecryptionException]
-  def decrypt(@NotNull data: Array[Byte], @NotNull passKey: PassKey): Array[Byte]
+  @Throws(ToxDecryptionException::class)
+  fun decrypt(data: ByteArray, passKey: PassKey): ByteArray
 
   /**
    *  Determines whether or not the given data is encrypted (by checking the magic number)
    */
-  def isDataEncrypted(data: Array[Byte]): Boolean
+  fun isDataEncrypted(data: ByteArray): Boolean
 
   /**
    * Generates a cryptographic hash of the given data.
@@ -130,7 +118,6 @@ trait ToxCrypto {
    * @param data Data to be hashed.
    * @return hash of the data.
    */
-  @NotNull
-  def hash(@NotNull data: Array[Byte]): Array[Byte]
+  fun hash(data: ByteArray): ByteArray
 
 }

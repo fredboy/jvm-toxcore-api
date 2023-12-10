@@ -1,5 +1,4 @@
-import im.tox.core.typesafe.ByteArrayCompanion
-import im.tox.core.typesafe.Security
+package im.tox.core.typesafe
 
 abstract class FixedSizeByteArrayCompanion<T : Any, S : Security>(
         val size: Int,

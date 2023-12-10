@@ -1,4 +1,4 @@
-import im.tox.core.typesafe.Security
+package im.tox.core.typesafe
 
 abstract class KeyCompanion<T : Any, S : Security>(
         size: Int,

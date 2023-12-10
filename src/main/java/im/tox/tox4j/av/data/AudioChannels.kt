@@ -2,14 +2,19 @@ package im.tox.tox4j.av.data
 
 import im.tox.core.typesafe.DiscreteIntCompanion
 
-final case class AudioChannels private (value: Int) extends AnyVal
+data class AudioChannels internal constructor(val value: Int) {
 
-case object AudioChannels extends DiscreteIntCompanion[AudioChannels](1, 2) {
+  companion object : DiscreteIntCompanion<AudioChannels>(1, 2) {
+    val mono = AudioChannels(1)
+    val stereo = AudioChannels(2)
 
-  val Mono: AudioChannels = new AudioChannels(1)
-  val Stereo: AudioChannels = new AudioChannels(2)
+    override fun unsafeFromInt(value: Int): AudioChannels {
+      return AudioChannels(value)
+    }
 
-  override def unsafeFromInt(value: Int): AudioChannels = new AudioChannels(value)
-  override def toInt(self: AudioChannels): Int = self.value
+    override fun toInt(self: AudioChannels): Int {
+      return self.value
+    }
+  }
 
 }

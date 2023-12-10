@@ -1,6 +1,6 @@
-package im.tox.core.typesafe
+import im.tox.core.typesafe.Security
 
-abstract class KeyCompanion[T <: AnyVal, S <: Security](
-    Size: Int,
-    toValue: T => Array[Byte]
-) extends FixedSizeByteArrayCompanion[T, S](Size, toValue)
+abstract class KeyCompanion<T : Any, S : Security>(
+        size: Int,
+        toValue: (T) -> ByteArray
+) : FixedSizeByteArrayCompanion<T, S>(size, toValue)

@@ -1,44 +1,62 @@
 package im.tox.tox4j.core.options
 
-import im.tox.tox4j.core.ToxCore
 import im.tox.tox4j.core.data.ToxSecretKey
 import im.tox.tox4j.core.enums.ToxSavedataType
 
 /**
  * Base type for all save data kinds.
  */
-sealed trait SaveDataOptions {
+sealed interface SaveDataOptions {
+
   /**
    * The low level [[ToxSavedataType]] enum to pass to [[ToxCore.load]].
    */
-  def kind: ToxSavedataType
+  val kind: ToxSavedataType
 
   /**
    * Serialised save data. The format depends on [[kind]].
    */
-  def data: Array[Byte]
-}
-
-/**
- * The various kinds of save data that can be loaded by [[ToxCore.load]].
- */
-object SaveDataOptions {
+  val data: ByteArray
 
   /**
    * No save data.
    */
-  case object None extends SaveDataOptions {
-    override def kind: ToxSavedataType = ToxSavedataType.NONE
-    override def data: Array[Byte] = Array.empty
+  data object None : SaveDataOptions {
+
+    override val kind = ToxSavedataType.NONE
+
+    override val data = ByteArray(0)
+
   }
 
   /**
    * Full save data containing friend list, last seen DHT nodes, name, and all other information
    * contained within a Tox instance.
    */
-  @SuppressWarnings(Array("org.wartremover.warts.ArrayEquals"))
-  final case class ToxSave(data: Array[Byte]) extends SaveDataOptions {
-    override def kind: ToxSavedataType = ToxSavedataType.TOX_SAVE
+  data class ToxSave(
+          override val data: ByteArray
+  ) : SaveDataOptions {
+
+    override val kind = ToxSavedataType.TOX_SAVE
+
+    override fun equals(other: Any?): Boolean {
+      if (this === other) return true
+      if (javaClass != other?.javaClass) return false
+
+      other as ToxSave
+
+      if (!data.contentEquals(other.data)) return false
+      if (kind != other.kind) return false
+
+      return true
+    }
+
+    override fun hashCode(): Int {
+      var result = data.contentHashCode()
+      result = 31 * result + kind.hashCode()
+      return result
+    }
+
   }
 
   /**
@@ -46,9 +64,31 @@ object SaveDataOptions {
    * secret key, the friend list, name, and noSpam value is sufficient to restore the observable
    * behaviour of a Tox instance without the full save data in [[ToxSave]].
    */
-  final case class SecretKey(key: ToxSecretKey) extends SaveDataOptions {
-    override def kind: ToxSavedataType = ToxSavedataType.SECRET_KEY
-    override def data: Array[Byte] = key.value
+  data class SecretKey internal constructor(
+          override val data: ByteArray
+  ) : SaveDataOptions {
+
+    constructor(key: ToxSecretKey) : this(key.value)
+
+    override val kind = ToxSavedataType.SECRET_KEY
+
+    override fun equals(other: Any?): Boolean {
+      if (this === other) return true
+      if (javaClass != other?.javaClass) return false
+
+      other as SecretKey
+
+      if (!data.contentEquals(other.data)) return false
+      if (kind != other.kind) return false
+
+      return true
+    }
+
+    override fun hashCode(): Int {
+      var result = data.contentHashCode()
+      result = 31 * result + kind.hashCode()
+      return result
+    }
   }
 
 }

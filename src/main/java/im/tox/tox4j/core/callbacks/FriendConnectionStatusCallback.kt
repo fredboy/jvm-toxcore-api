@@ -11,12 +11,12 @@ import org.jetbrains.annotations.NotNull
  * This callback is not called when adding friends. It is assumed that when
  * adding friends, their connection status is initially offline.
  */
-trait FriendConnectionStatusCallback[ToxCoreState] {
+interface FriendConnectionStatusCallback<ToxCoreState> {
   /**
    * @param friendNumber The friend number of the friend whose connection status changed.
    * @param connectionStatus The new connection status.
    */
-  def friendConnectionStatus(
-    friendNumber: ToxFriendNumber, @NotNull connectionStatus: ToxConnection
-  )(state: ToxCoreState): ToxCoreState = state
+  fun friendConnectionStatus(friendNumber: ToxFriendNumber,
+                             connectionStatus: ToxConnection,
+                             state: ToxCoreState): ToxCoreState = state
 }

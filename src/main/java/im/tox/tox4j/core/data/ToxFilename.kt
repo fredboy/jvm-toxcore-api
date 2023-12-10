@@ -1,19 +1,23 @@
 package im.tox.tox4j.core.data
 
-import im.tox.core.typesafe.VariableSizeByteArrayCompanion
+import im.tox.core.typesafe.KeyCompanion
+import im.tox.core.typesafe.Security
 import im.tox.tox4j.core.ToxCoreConstants
 
-@SuppressWarnings(Array("org.wartremover.warts.ArrayEquals"))
-final case class ToxFilename private (value: Array[Byte]) extends AnyVal {
-  override def toString: String = new String(value)
-  def toHexString: String = ToxFilename.toHexString(this)
-}
+data class ToxFileName internal constructor(val value: ByteArray) {
 
-case object ToxFilename extends VariableSizeByteArrayCompanion[ToxFilename](
-  ToxCoreConstants.MaxFilenameLength,
-  _.value
-) {
+  fun toHexString() = ToxFileName.toHexString(this)
 
-  override def unsafeFromValue(value: Array[Byte]): ToxFilename = new ToxFilename(value)
+  override fun toString(): String = String(value)
 
+  companion object : KeyCompanion<ToxFileName, Security.Sensitive>(
+          ToxCoreConstants.maxFileNameLength,
+          ToxFileName::value
+  ) {
+
+    override fun unsafeFromValue(value: ByteArray): ToxFileName {
+      return ToxFileName(value)
+    }
+
+  }
 }

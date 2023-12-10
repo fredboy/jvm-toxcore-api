@@ -1,12 +1,12 @@
 package im.tox.core.typesafe
 
-abstract class VariableSizeByteArrayCompanion[T <: AnyVal](
-    val MaxSize: Int,
-    toValue: T => Array[Byte]
-) extends ByteArrayCompanion[T, Security.Sensitive](toValue) {
+abstract class VariableSizeByteArrayCompanion<T : Any>(
+        val maxSize: Int,
+        toValue: (T) -> ByteArray,
+) : ByteArrayCompanion<T, Security.Sensitive>(toValue) {
 
-  override protected def validate: Validator = super.validate { value =>
-    Validator.require(value.length <= MaxSize, s"Invalid length: ${value.length} > $MaxSize")
-  }
+    override fun validate(value: ByteArray): Exception? {
+        return require(value.size < maxSize) { "Invalid length: ${value.size} > $maxSize" }
+    }
 
 }

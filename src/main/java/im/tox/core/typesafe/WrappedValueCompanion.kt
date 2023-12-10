@@ -11,7 +11,7 @@ abstract class WrappedValueCompanion<Repr, T : Any, S : Security> : ModuleCompan
 
   protected abstract fun validate(value: Repr): Exception?
 
-  protected abstract fun unsafeFromValue(value: Repr): T
+  abstract fun unsafeFromValue(value: Repr): T
 
   fun fromValue(value: Repr): Either<Exception, T> {
     return validate(value)?.toLeft() ?: unsafeFromValue(value).toRight()

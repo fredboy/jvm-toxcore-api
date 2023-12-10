@@ -4,7 +4,7 @@ abstract class DiscreteIntCompanion<T : Any>(
         protected vararg val values: Int
 ) : IntCompanion<T>() {
 
-  protected abstract fun unsafeFromInt(value: Int): T
+  abstract fun unsafeFromInt(value: Int): T
 
   override fun fromInt(value: Int): T? {
     return if (values.contains(value)) {

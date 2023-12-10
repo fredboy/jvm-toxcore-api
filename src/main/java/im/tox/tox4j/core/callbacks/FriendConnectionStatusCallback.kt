@@ -2,7 +2,6 @@ package im.tox.tox4j.core.callbacks
 
 import im.tox.tox4j.core.data.ToxFriendNumber
 import im.tox.tox4j.core.enums.ToxConnection
-import org.jetbrains.annotations.NotNull
 
 /**
  * This event is triggered when a friend goes offline after having been online,

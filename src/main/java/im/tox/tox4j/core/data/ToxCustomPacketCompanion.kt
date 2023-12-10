@@ -15,7 +15,7 @@ abstract class ToxCustomPacketCompanion<T : Any>(
   }
 
   override fun validate(value: ByteArray): Exception? {
-    return if (value.isEmpty()) {
+    return super.validate(value) ?: if (value.isEmpty()) {
       IllegalArgumentException("Empty custom packet")
     } else {
       val packetId = value.first().toInt() and 0xff

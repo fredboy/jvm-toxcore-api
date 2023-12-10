@@ -1,12 +1,13 @@
-package im.tox.core.typesafe
+import im.tox.core.typesafe.ByteArrayCompanion
+import im.tox.core.typesafe.Security
 
-abstract class FixedSizeByteArrayCompanion[T <: AnyVal, S <: Security](
-    final val Size: Int,
-    toValue: T => Array[Byte]
-) extends ByteArrayCompanion[T, S](toValue) {
+abstract class FixedSizeByteArrayCompanion<T : Any, S : Security>(
+        val size: Int,
+        toValue: (T) -> ByteArray,
+) : ByteArrayCompanion<T, S>(toValue) {
 
-  override def validate: Validator = super.validate { value =>
-    Validator.require(value.length === Size, s"Invalid length: ${value.length} != $Size")
-  }
+    override fun validate(value: ByteArray): Exception? {
+        return require(value.size == size) { "Invalid length: ${value.size} != $size" }
+    }
 
 }

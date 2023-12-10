@@ -2,13 +2,18 @@ package im.tox.tox4j.core.data
 
 import im.tox.core.typesafe.BoundedIntCompanion
 
-final case class ToxFriendNumber private (value: Int) extends AnyVal
+data class ToxFriendNumber internal constructor(val value: Int) {
 
-case object ToxFriendNumber extends BoundedIntCompanion[ToxFriendNumber](0, Int.MaxValue) {
+  companion object : BoundedIntCompanion<ToxFriendNumber>(0, Int.MAX_VALUE) {
 
-  override def unsafeFromInt(value: Int): ToxFriendNumber = new ToxFriendNumber(value)
-  override def toInt(self: ToxFriendNumber): Int = self.value
+    override fun unsafeFromInt(value: Int): ToxFriendNumber {
+      return ToxFriendNumber(value)
+    }
 
-  implicit val ordToxFriendNumber: Ordering[ToxFriendNumber] = Ordering.by(_.value)
+    override fun toInt(self: ToxFriendNumber): Int {
+      return self.value
+    }
+
+  }
 
 }

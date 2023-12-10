@@ -1,14 +1,16 @@
 package im.tox.tox4j.core.data
 
-@SuppressWarnings(Array("org.wartremover.warts.ArrayEquals"))
-final class ToxLossyPacket private (val value: Array[Byte]) extends AnyVal
+data class ToxLossyPacket internal constructor(val value: ByteArray) {
 
-case object ToxLossyPacket extends ToxCustomPacketCompanion[ToxLossyPacket](
-  MinPacketId = 200, // scalastyle:ignore magic.number
-  MaxPacketId = 254, // scalastyle:ignore magic.number
-  _.value
-) {
+  companion object : ToxCustomPacketCompanion<ToxLossyPacket>(
+          minPacketId = 200,
+          maxPacketId = 256,
+          ToxLossyPacket::value
+  ) {
 
-  override def unsafeFromValue(value: Array[Byte]): ToxLossyPacket = new ToxLossyPacket(value)
+    override fun unsafeFromValue(value: ByteArray): ToxLossyPacket {
+      return ToxLossyPacket(value)
+    }
 
+  }
 }

@@ -6,7 +6,9 @@ import com.fernandocejas.sample.core.functional.toRight
 import im.tox.core.ModuleCompanion
 import im.tox.core.typesafe.Security
 
-abstract class WrappedValueCompanion<Repr, T : Any, S : Security>: ModuleCompanion<T, S>() {
+abstract class WrappedValueCompanion<Repr, T : Any, S : Security> : ModuleCompanion<T, S>() {
+
+  abstract val toValue: (T) -> Repr
 
   protected abstract fun validate(value: Repr): Exception?
 

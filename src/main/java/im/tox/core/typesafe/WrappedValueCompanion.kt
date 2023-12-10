@@ -4,7 +4,6 @@ import com.fernandocejas.sample.core.functional.Either
 import com.fernandocejas.sample.core.functional.toLeft
 import com.fernandocejas.sample.core.functional.toRight
 import im.tox.core.ModuleCompanion
-import im.tox.core.typesafe.Security
 
 abstract class WrappedValueCompanion<Repr, T : Any, S : Security> : ModuleCompanion<T, S>() {
 
@@ -16,6 +15,15 @@ abstract class WrappedValueCompanion<Repr, T : Any, S : Security> : ModuleCompan
 
   fun fromValue(value: Repr): Either<Exception, T> {
     return validate(value)?.toLeft() ?: unsafeFromValue(value).toRight()
+  }
+
+  protected fun require(value: Boolean, lazyMessage: () -> Any): Exception? {
+      return try {
+          kotlin.require(value, lazyMessage)
+          null
+      } catch (exception: Exception) {
+          exception
+      }
   }
 
 }

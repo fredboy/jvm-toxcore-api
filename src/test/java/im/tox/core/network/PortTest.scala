@@ -1,6 +1,5 @@
 package im.tox.core.network
 
-import im.tox.core.typesafe.Equals._
 import im.tox.core.ModuleCompanionTest
 import org.scalacheck.Arbitrary
 import org.scalacheck.Arbitrary.arbitrary

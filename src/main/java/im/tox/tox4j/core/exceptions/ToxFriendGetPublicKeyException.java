@@ -3,7 +3,7 @@ package im.tox.tox4j.core.exceptions;
 import im.tox.tox4j.exceptions.ToxException;
 import org.jetbrains.annotations.NotNull;
 
-public final class ToxFriendGetPublicKeyException extends ToxException<ToxFriendGetPublicKeyException.Code> {
+public final class ToxFriendGetPublicKeyException extends ToxException {
 
   public enum Code {
     /**

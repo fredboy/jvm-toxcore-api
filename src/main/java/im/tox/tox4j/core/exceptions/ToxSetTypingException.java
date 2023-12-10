@@ -3,7 +3,7 @@ package im.tox.tox4j.core.exceptions;
 import im.tox.tox4j.exceptions.ToxException;
 import org.jetbrains.annotations.NotNull;
 
-public final class ToxSetTypingException extends ToxException<ToxSetTypingException.Code> {
+public final class ToxSetTypingException extends ToxException {
 
   public enum Code {
     /**

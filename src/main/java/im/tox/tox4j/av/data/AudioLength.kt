@@ -1,35 +1,35 @@
 package im.tox.tox4j.av.data
 
-import im.tox.core.error.CoreError
 import im.tox.core.typesafe.DiscreteValueCompanion
+import kotlin.time.Duration
+import kotlin.time.Duration.Companion.microseconds
 
-import scala.concurrent.duration._
-import scala.language.postfixOps
+data class AudioLength internal constructor(val value: Duration) {
 
-final case class AudioLength private (value: Duration) extends AnyVal
+  companion object : DiscreteValueCompanion<Duration, AudioLength>(
+          AudioLength::value,
+          5000.microseconds,
+          10000.microseconds,
+          20000.microseconds,
+          40000.microseconds,
+          60000.microseconds,
+  ) {
 
-// scalastyle:off magic.number
-case object AudioLength extends DiscreteValueCompanion[Duration, AudioLength](
-  _.value,
-  2500 microseconds,
-  5000 microseconds,
-  10000 microseconds,
-  20000 microseconds,
-  40000 microseconds,
-  60000 microseconds
-) {
+    val length2_5 = AudioLength(values[0])
+    val length5 = AudioLength(values[1])
+    val length10 = AudioLength(values[2])
+    val length20 = AudioLength(values[3])
+    val length40 = AudioLength(values[4])
+    val length60 = AudioLength(values[5])
 
-  protected override def unsafeFromValue(value: Duration): AudioLength = new AudioLength(value)
+    override fun unsafeFromValue(value: Duration): AudioLength {
+      return AudioLength(value)
+    }
 
-  val Length2_5: AudioLength = new AudioLength(values(0))
-  val Length5: AudioLength = new AudioLength(values(1))
-  val Length10: AudioLength = new AudioLength(values(2))
-  val Length20: AudioLength = new AudioLength(values(3))
-  val Length40: AudioLength = new AudioLength(values(4))
-  val Length60: AudioLength = new AudioLength(values(5))
+    override fun equals(a: AudioLength, b: AudioLength): Boolean {
+      return a.value == b.value
+    }
 
-  final override def equals(a: AudioLength, b: AudioLength): Boolean = {
-    a.value == b.value
   }
 
 }

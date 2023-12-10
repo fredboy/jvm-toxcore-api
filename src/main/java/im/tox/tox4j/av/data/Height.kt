@@ -2,11 +2,18 @@ package im.tox.tox4j.av.data
 
 import im.tox.core.typesafe.BoundedIntCompanion
 
-final case class Height private (value: Int) extends AnyVal
+data class Height internal constructor(val value: Int) {
 
-case object Height extends BoundedIntCompanion[Height](1, 1200) { // scalastyle:ignore magic.number
+  companion object : BoundedIntCompanion<Height>(1, 1200) {
 
-  def unsafeFromInt(value: Int): Height = new Height(value)
-  def toInt(self: Height): Int = self.value
+    override fun unsafeFromInt(value: Int): Height {
+      return Height(value)
+    }
+
+    override fun toInt(self: Height): Int {
+      return self.value
+    }
+
+  }
 
 }

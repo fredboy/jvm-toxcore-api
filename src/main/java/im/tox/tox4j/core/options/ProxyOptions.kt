@@ -5,12 +5,12 @@ import im.tox.tox4j.core.enums.ToxProxyType
 /**
  * Base type for all proxy kinds.
  */
-sealed class ProxyOptions {
+sealed interface ProxyOptions {
 
   /**
    * Low level enumeration value to pass to [ToxCore.load].
    */
-  abstract val proxyType: ToxProxyType
+  val proxyType: ToxProxyType
 
   /**
    * The IP address or DNS name of the proxy to be used.
@@ -18,19 +18,19 @@ sealed class ProxyOptions {
    * If used, this must be a valid DNS name. The name must not exceed [[ToxCoreConstants.MaxHostnameLength]] characters.
    * This member is ignored (it can be anything) if [[proxyType]] is [[ToxProxyType.NONE]].
    */
-  abstract val proxyAddress: String
+  val proxyAddress: String
 
   /**
    * The port to use to connect to the proxy server.
    *
    * Ports must be in the range (1, 65535). The value is ignored if [[proxyType]] is [[ToxProxyType.NONE]].
    */
-  abstract val proxyPort: Port
+  val proxyPort: Port
 
   /**
    * Don't use a proxy. Attempt to directly connect to other nodes.
    */
-  data object None : ProxyOptions() {
+  data object None : ProxyOptions {
     override val proxyType = ToxProxyType.NONE
     override val proxyAddress = ""
     override val proxyPort: Port = Port.unsafeFromInt(0)
@@ -42,7 +42,7 @@ sealed class ProxyOptions {
   data class Http(
           override val proxyAddress: String,
           override val proxyPort: Port,
-  ) : ProxyOptions() {
+  ) : ProxyOptions {
     override val proxyType = ToxProxyType.HTTP
   }
 
@@ -54,7 +54,7 @@ sealed class ProxyOptions {
   data class Socks5(
           override val proxyAddress: String,
           override val proxyPort: Port,
-  ) : ProxyOptions() {
+  ) : ProxyOptions {
     override val proxyType = ToxProxyType.SOCKS5
   }
 

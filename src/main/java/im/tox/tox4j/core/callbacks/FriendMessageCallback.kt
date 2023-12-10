@@ -1,13 +1,13 @@
 package im.tox.tox4j.core.callbacks
 
-import im.tox.tox4j.core.data.{ ToxFriendNumber, ToxFriendMessage }
+import im.tox.tox4j.core.data.ToxFriendMessage
+import im.tox.tox4j.core.data.ToxFriendNumber
 import im.tox.tox4j.core.enums.ToxMessageType
-import org.jetbrains.annotations.NotNull
 
 /**
  * This event is triggered when a message from a friend is received.
  */
-trait FriendMessageCallback[ToxCoreState] {
+interface FriendMessageCallback<ToxCoreState> {
   /**
    * @param friendNumber The friend number of the friend who sent the message.
    * @param messageType Message type (normal, action, ...).
@@ -18,7 +18,10 @@ trait FriendMessageCallback[ToxCoreState] {
    *                  approximation of when it was composed.
    * @param message The message data they sent.
    */
-  def friendMessage(
-    friendNumber: ToxFriendNumber, @NotNull messageType: ToxMessageType, timeDelta: Int, @NotNull message: ToxFriendMessage
-  )(state: ToxCoreState): ToxCoreState = state
+  fun friendMessage(
+          friendNumber: ToxFriendNumber,
+          messageType: ToxMessageType,
+          timeDelta: Int,
+          message: ToxFriendMessage,
+          state: ToxCoreState): ToxCoreState = state
 }

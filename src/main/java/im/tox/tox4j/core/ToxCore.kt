@@ -426,7 +426,7 @@ interface ToxCore : Closeable {
    *         Any pattern in file numbers should not be relied on.
    */
   @Throws(ToxFileSendException::class)
-  fun fileSend(friendNumber: ToxFriendNumber, kind: ToxFileKind, fileSize: Long, fileId: ToxFileId, fileName: ToxFileName): Int
+  fun fileSend(friendNumber: ToxFriendNumber, kind: Int, fileSize: Long, fileId: ToxFileId, fileName: ToxFileName): Int
 
   /**
    * Send a chunk of file data to a friend.
